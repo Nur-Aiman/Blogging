@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Blog Page</title>
+    <style>
+      body {
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 8rem;
+        padding-left: 10%;
+        padding-right: 10%;
+        background-image: url('/images/black\ background.jpg');
+        background-size: cover;
+      }
+
+      #nav-buttons {
+        margin-bottom: 2rem;
+      }
+
+      .navbar,
+      .navbar-brand {
+        background-color: brown;
+        color: antiquewhite;
+      }
+
+      .card-header {
+        font-size: 30px;
+        text-align: center;
+      }
+
+      .form-group {
+        font-size: 25px;
+        text-align: center;
+      }
+
+      label {
+        color: brown;
+      }
+
+      form {
+        font-size: 25px;
+        text-align: center;
+      }
+
+      input[type='text'],
+      input[type='email'],
+      input[type='file'] {
+        text-align: center;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div>
+      <nav class="navbar fixed-top d-flex">
+        <a href="/api/blogs">
+          <button class="btn btn-dark ml-auto">Home Page</button>
+        </a>
+        <a class="navbar-brand ml-auto" href="#">Blogging Platform</a>
+        <div class="ml-auto">
+          <div class="dropdown">
+            <button
+              class="btn btn-secondary dropdown-toggle"
+              style="background-color: rgb(105, 3, 3)"
+              type="button"
+              id="dropdownMenuButton"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              <%= userEmail %>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" href="/api/users/logout">Logout</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container mt-4">
+      <div class="card">
+        <div class="card-header">Create Your Blog Post</div>
+
+        <form
+          action="/api/blogs/createPost"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <div class="form-group">
+            <label for="title">Titles:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="title"
+              name="title"
+              placeholder="Enter the title of your blog post"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="subheader">Subheader:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="subheader"
+              name="subheader"
+              placeholder="Enter the subheader of your blog post"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="imageTitle">Image Title:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="imageTitle"
+              name="imageTitle"
+              placeholder="Enter the title of the image for your blog post"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              placeholder="Enter your email address"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="blogBody">Blog Post Body:</label>
+            <textarea
+              class="form-control"
+              id="blogBody"
+              name="blogBody"
+              rows="5"
+              placeholder="Enter the body of your blog post"
+              required
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="file">File:</label>
+            <input
+              type="file"
+              id="file"
+              name="file"
+              accept="image/*,video/*"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-dark">Submit Blog</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

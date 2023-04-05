@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Blog Page</title>
+    <style>
+      body {
+        height: 90cm;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 1rem;
+        padding-left: 10%;
+        padding-right: 10%;
+        background-image: url('/images/black\ background(rotate).jpg');
+        background-size: cover;
+      }
+
+      #nav-buttons {
+        margin-bottom: 2rem;
+      }
+
+      #blog-post {
+        height: auto;
+        width: 100%;
+        /*border: 1px solid blue;*/
+        padding: 1rem;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      #like-button {
+        margin-top: 1rem;
+      }
+
+      #comment-section {
+        height: 30cm;
+        width: 100%;
+        padding: 1rem;
+        margin-top: 2rem;
+        font-size: 20px;
+        overflow-y: auto;
+      }
+
+      #nextblog-bar {
+        height: auto;
+        margin-top: 50px;
+        cursor: pointer;
+        padding: 15px;
+      }
+
+      .container-fluid {
+        margin-top: 150px;
+      }
+
+      .navbar,
+      .navbar-brand {
+        background-color: brown;
+        color: antiquewhite;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div>
+      <nav class="navbar fixed-top d-flex">
+        <a href="/api/blogs/createPost"
+          ><button class="btn btn-dark ml-auto">Create Blog</button></a
+        >
+        <a class="navbar-brand ml-auto" href="#">Blogging Platform</a>
+        <div class="ml-auto">
+          <div class="dropdown">
+            <button
+              class="btn btn-secondary dropdown-toggle"
+              style="background-color: rgb(105, 3, 3)"
+              type="button"
+              id="dropdownMenuButton"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              <%= userEmail %>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" href="/api/users/logout">Logout</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container-fluid" style="margin-top: 100px">
+      <div class="row">
+        <div class="col-md-9" style="border-right: 10px solid wheat">
+          <div id="nav-buttons"> </div>
+
+          <div id="blog-post">
+            <% const postKeys = Object.keys(posts); %> <% const currentPost =
+            posts[postKeys[currentIndex]]; %> <% if (currentPost.fileUrl) { %>
+            <% if (currentPost.fileUrl.includes('.jpg') ||
+            currentPost.fileUrl.includes('.png')) { %>
+            <img
+              src="<%= currentPost.fileUrl %>"
+              alt="blog image"
+              style="
+                width: 100%;
+                max-height: 50vh;
+                object-fit: contain;
+                margin-bottom: 20px;
+              "
+            />
+            <% } else if (currentPost.fileUrl.includes('.mp4')) { %>
+            <video
+              src="<%= currentPost.fileUrl %>"
+              controls
+              autoplay
+              muted
+              style="width: 100%; max-height: 50vh; margin-bottom: 20px"
+            ></video>
+            <% } %> <% } %>
+            <h1
+              style="
+                background-color: brown;
+                color: wheat;
+                font-size: 40px;
+                padding: 15px;
+                border-radius: 10px;
+              "
+            >
+              <%= currentPost.title %> <br />
+              <span style="font-size: 25px; font-style: italic"
+                ><%= currentPost.subheader %></span
+              >
+            </h1>
+
+            <br />
+            <p
+              style="
+                font-size: 25px;
+                font-family: Arial, Helvetica, sans-serif;
+                line-height: 2.5;
+                text-indent: 100px;
+                color: whitesmoke;
+              "
+            >
+              <%= currentPost.blogBody %>
+            </p>
+            <button
+              id="like-button"
+              data-post-id="<%= currentPost.ID %>"
+              class="<%= currentPost.likedBy && currentPost.likedBy.includes(userEmail) ? 'liked' : '' %>"
+            >
+              <% if (currentPost.likedBy &&
+              currentPost.likedBy.includes(userEmail)) { %> Unlike <% } else {
+              %> Like <% } %>
+            </button>
+            <p style="color: whitesmoke">
+              Likes:
+              <span
+                id="likes-count-<%= currentPost.ID %>"
+                style="color: whitesmoke"
+                ><%= currentPost.likes %></span
+              >
+            </p>
+          </div>
+
+          <div id="comment-section" class="text-center">
+            <h2 style="background-color: brown; color: antiquewhite"
+              >Leave a Comment</h2
+            >
+            <form
+              id="comment-form"
+              method="POST"
+              action="/api/blogs/addComment"
+            >
+              <input type="hidden" name="email" value="<%= userEmail %>" />
+              <div
+                class="form-group mx-auto"
+                style="width: 60%; color: whitesmoke"
+              >
+                <textarea
+                  class="form-control"
+                  id="comment"
+                  name="comment"
+                  placeholder="Comment"
+                  required
+                ></textarea>
+              </div>
+              <input
+                type="hidden"
+                name="postId"
+                value="<%= currentPost.ID %>"
+              />
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+
+            <h2 style="margin-top: 30px; color: whitesmoke">Comments</h2>
+            <% comments.forEach(comment => { %>
+
+            <div class="card mx-auto" style="width: 60%">
+              <div class="card-header" style="font-weight: bold; height: auto">
+                <%= comment.email %>
+              </div>
+              <div class="card-body" style="height: auto">
+                <blockquote class="blockquote mb-0">
+                  <p><%= comment.comment %></p>
+                </blockquote>
+              </div>
+            </div>
+
+            <% }); %>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div
+            style="background-color: white; border-radius: 20px"
+            id="nextblog-bar"
+            onclick="location.href='/api/blogs/nextBlog?currentIndex=<%= currentIndex %>'"
+          >
+            <h3>Next Blog:</h3>
+            <% if (postKeys[currentIndex + 1]) { %> <% const nextPost =
+            posts[postKeys[currentIndex + 1]]; %> <% if
+            (nextPost.fileUrl.includes('.jpg') ||
+            nextPost.fileUrl.includes('.png')) { %>
+            <img
+              src="<%= nextPost.fileUrl %>"
+              alt="<%= nextPost.imageTitle %>"
+              style="width: 100%; border-radius: 20px"
+            />
+            <% } else if (nextPost.fileUrl.includes('.mp4')) { %>
+            <video
+              src="<%= nextPost.fileUrl %>"
+              alt="<%= nextPost.imageTitle %>"
+              style="width: 100%; border-radius: 20px"
+            ></video>
+            <% } %>
+            <h4><%= nextPost.title %></h4>
+            <% } else { %> <% const firstPost = posts[postKeys[0]]; %> <% if
+            (firstPost.fileUrl.includes('.jpg') ||
+            firstPost.fileUrl.includes('.png')) { %>
+            <img
+              src="<%= firstPost.fileUrl %>"
+              alt="<%= firstPost.imageTitle %>"
+              style="width: 100%; border-radius: 20px"
+            />
+            <% } else if (firstPost.fileUrl.includes('.mp4')) { %>
+            <video
+              src="<%= firstPost.fileUrl %>"
+              alt="<%= firstPost.imageTitle %>"
+              style="width: 100%; border-radius: 20px"
+              autoplay
+              muted
+              onloadedmetadata="this.currentTime=30"
+              onloadeddata="captureVideoSnapshot(this)"
+            ></video>
+            <% } %>
+            <h4><%= firstPost.title %></h4>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const likeButton = document.querySelector('#like-button')
+      likeButton.addEventListener('click', async (event) => {
+        const postId = event.target.getAttribute('data-post-id')
+        const response = await fetch('/api/blogs/likePost', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ postId }),
+        })
+        if (response.ok) {
+          const { success, newLikes } = await response.json()
+          if (success) {
+            const likesCountElement = document.querySelector(
+              `#likes-count-${postId}`
+            )
+            likesCountElement.textContent = newLikes
+            likeButton.classList.toggle('liked')
+            likeButton.textContent = likeButton.classList.contains('liked')
+              ? 'Unlike'
+              : 'Like'
+          }
+        }
+      })
+      const commentForm = document.querySelector('#comment-form')
+      commentForm.addEventListener('submit', async (event) => {
+        event.preventDefault()
+        const email = '<%= userEmail %>'
+        const comment = document.querySelector('#comment').value
+        const postId = '<%= currentPost.ID %>'
+        const response = await fetch('/api/blogs/addComment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ postId, email, comment }),
+        })
+        if (response.ok) {
+          const { success, newComment } = await response.json()
+          if (success) {
+            // create a new comment element with the corresponding CSS element
+            const newCommentElement = document.createElement('div')
+            newCommentElement.classList.add('card', 'mx-auto')
+            newCommentElement.style.width = '60%'
+            const newCommentHeader = document.createElement('div')
+            newCommentHeader.classList.add('card-header')
+            newCommentHeader.style.fontWeight = 'bold'
+            newCommentHeader.style.height = 'auto'
+            newCommentHeader.textContent = newComment.email
+            const newCommentBody = document.createElement('div')
+            newCommentBody.classList.add('card-body')
+            newCommentBody.style.height = 'auto'
+            const blockQuote = document.createElement('blockquote')
+            blockQuote.classList.add('blockquote', 'mb-0')
+            const p = document.createElement('p')
+            p.textContent = newComment.comment
+            blockQuote.appendChild(p)
+            newCommentBody.appendChild(blockQuote)
+            newCommentElement.appendChild(newCommentHeader)
+            newCommentElement.appendChild(newCommentBody)
+
+            // add the new comment element to the comments section
+            const commentsSection = document.querySelector('#comment-section')
+            commentsSection.appendChild(newCommentElement)
+
+            // clear the comment form
+            document.querySelector('#comment').value = ''
+          }
+        }
+      })
+
+      function captureVideoSnapshot(video) {
+        // create a canvas element
+        const canvas = document.createElement('canvas')
+        canvas.width = video.videoWidth
+        canvas.height = video.videoHeight
+
+        // draw the current frame of the video onto the canvas
+        const context = canvas.getContext('2d')
+        context.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+        // convert the canvas to an image and set it as the poster of the video
+        const snapshot = canvas.toDataURL('image/png')
+        video.setAttribute('poster', snapshot)
+      }
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
